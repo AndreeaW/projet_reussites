@@ -36,6 +36,7 @@ Rang RangSuivant(Rang R) {
 	/* Testeurs et selecteurs */
 	
 Rang LeRang(Carte C) {
+	return C.RC;
 }
 
 Couleur LaCouleur(Carte C) {
@@ -62,6 +63,7 @@ booleen MemeCouleur(Carte C1, Carte C2) {
 }
 
 booleen EstCarteAvant(Carte C1, Carte C2) {
+	return CouleurInferieure(C1,C2) || (MemeCouleur(C1,C2) && RangInferieur(C1,C2));
 }
 
 /* Representation des tas */
@@ -81,9 +83,11 @@ booleen TasEtale(Tas T) {
 }
 
 int LaHauteur(Tas T) {
+	return T.HT;	
 }
 
 Localisation LaPlace(Tas T) {
+	return T.LT;
 }
 
 	/* Constructeurs */
@@ -123,6 +127,7 @@ Carte CarteSur(Tas T) {
 carte situee au dessus du tas
 **************************************************************** */
 Carte CarteSur(Tas T) {
+	return (*(T.tete)).elt;
 }
 
 /* *************************************************************
@@ -130,6 +135,7 @@ Carte CarteSous(Tas T) {
 carte situee au dessous du tas
 **************************************************************** */
 Carte CarteSous(Tas T) {
+	return (*(T.queue)).elt;
 }
 
 /* *************************************************************
@@ -166,9 +172,11 @@ void EtalerTas(Tas *T)
 modification du mode d'etalement d'un tas
 **************************************************************** */
 void EmpilerTas(Tas *T) {
+	T->MT = empile;
 }
 
 void EtalerTas(Tas *T) {
+	T->MT = etale;
 }
 
 	
@@ -262,6 +270,10 @@ Cette opération ne modifie ni la visibilité des cartes, ni la localisation des t
 ni leur mode d'étalement.
 ********************************************************************************* */
 void PoserTasSurTas(Tas *T1, Tas *T2) {
+	if (T1->MT != T2->MT) return;
+	while (T1->HT != 0) {
+		DeplacerBasSous(T1, T2);
+	}
 }
 
 
