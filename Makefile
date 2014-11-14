@@ -22,5 +22,5 @@ Reussites.e: ${LIB}/libmachine_trace.a Alea.o Tas.o AfficherTas.o R7.o C4.o QLL.
 	gcc  -g -I${INCL} -o Reussites.e Reussites.c ${LIB}/graphlib_w.o InteractionToutes.o QLL.o C4.o R7.o Tas.o AfficherTas.o Alea.o -L${LIB} -lmachine_trace -L/usr/X11R6/lib -lX11 -lm
 
 clean:
-	rm -f AfficherTas.o Alea.o InteractionR7.o R7.o *.e
+	rm -f AfficherTas.o Alea.o InteractionR7.o R7.o *.o *.e
 
