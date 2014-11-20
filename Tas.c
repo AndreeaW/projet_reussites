@@ -8,6 +8,7 @@
 
 #include "Tas.h"
 #include "Alea.h"
+#include <stdio.h>
 
 /*-----------------------------------*/
 /* Specifications des objets de base */
@@ -124,7 +125,6 @@ associe à T un tas vide actif placé en L et de mode d'étalement M.
 Pré-condition : l'emplacement L est disponible
 **************************************************************** */
 void CreerTasVide(Localisation L, Mode M, Tas *T) {
-	T = (Tas *) malloc(sizeof(Tas));
 	(*T).LT = L; 
 	(*T).MT = M; 
 	(*T).RT = actif;
@@ -140,8 +140,9 @@ devient libre pour un autre tas.
 Pré-condition : le tas T est vide et actif
 **************************************************************** */
 void SupprimerTasVide(Tas *T) {
-	free(T);
-	T = NULL;
+	T->LT.NC = 0;
+	T->LT.NL = 0;
+	T->RT = inactif;
 }
 
 /* *************************************************************
@@ -152,13 +153,30 @@ Donne leur valeur aux variables globales NbCartes et PremierRang.
 Pré-condition : l'emplacement L est libre
                 N==52 ou N==32
 **************************************************************** */
+struct adCarte* CreerCarte(Couleur c, Rang r, Visibilite visibilite) {
+	struct adCarte* carte = (struct adCarte*) malloc(sizeof(struct adCarte));
+	carte->elt.CC = c;
+	carte->elt.RC = r;
+	carte->elt.VC = visibilite;
+	return carte;
+}
+
 void CreerJeuNeuf(int N, Localisation L, Tas *T) {
-	T->MT=empile;
-	T->LT=L;
-	T->tete->elt.VC=Cachee;
-	T->queue->elt.VC=Cachee;
+	CreerTasVide(L, empile, T);
+
+	NbCartes = N;
+
 	if (N==32) PremierRang=Sept;
 	else PremierRang=Deux;
+
+	Couleur c;
+	Rang r;
+	for (c = PremiereCouleur; c <= DerniereCouleur ; c++) {
+		for (r = PremierRang ; r<= DernierRang ; r++) {
+			struct adCarte * carte = CreerCarte(c, r, Cachee);
+			AjouterCarteSurTas(carte, T); 
+		}
+	}
 }
 
 	/* Consultation des cartes d'un tas: ne deplace pas la carte */
@@ -185,6 +203,7 @@ ieme carte dans T (de bas en haut).
 Précondition : i <= LaHauteur(T)
 **************************************************************** */
 Carte IemeCarte(Tas T, int i) {
+	printf("iemecarte");
 	int j;
 	struct adCarte * courant = T.tete;
 
@@ -313,9 +332,16 @@ void AjouterCarteSurTas (adCarte *ac, Tas *T)
 ajoute la carte d'adresse ac sur le tas T
 ********************************************************************************* */
 void AjouterCarteSurTas (struct adCarte *ac, Tas *T) {
-	 ac->suiv = T->queue->suiv;
-	T->queue->suiv = ac;
-	ac->prec =T->queue;
+	if (TasVide(*T)) {
+		T->tete = ac;
+		T->queue = ac;
+		ac->suiv = NULL;
+		ac->prec = NULL;
+	} else {
+		ac->suiv = T->queue->suiv;
+		T->queue->suiv = ac;
+		ac->prec =T->queue;
+	}
 }
 
 /* ******************************************************************************
@@ -323,9 +349,16 @@ void AjouterCarteSousTas (adCarte *ac, Tas *T)
 ajoute la carte d'adresse ac sous le tas T
 ********************************************************************************* */
 void AjouterCarteSousTas (struct adCarte *ac, Tas *T) {
-	ac->suiv = T->tete->suiv;
-	T->tete->suiv = ac;
-	ac->prec =T->tete;
+	if (TasVide(*T)) {
+		T->tete = ac;
+		T->queue = ac;
+		ac->suiv = NULL;
+		ac->prec = NULL;
+	} else {
+		ac->suiv = T->tete->suiv;
+		T->tete->suiv = ac;
+		ac->prec =T->tete;
+	}
 }
 
 
@@ -441,5 +474,3 @@ void PoserTasSurTas(Tas *T1, Tas *T2) {
 		DeplacerBasSous(T1, T2);
 	}
 }
-
-

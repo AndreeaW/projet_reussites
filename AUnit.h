@@ -1,0 +1,1 @@
+void Aassert(int assertion);
